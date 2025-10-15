@@ -1,7 +1,6 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -77,28 +76,12 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> _initBrazilTime() async {
-    try {
-      final String tz = await FlutterNativeTimezone.getLocalTimezone();
-      // compute Brasília time (UTC-3) from UTC as fallback
-      final nowUtc = DateTime.now().toUtc();
-      final br = nowUtc.add(const Duration(hours: -3));
-      _updateGreetingAndImage(br);
-
-      // If device timezone seems to be Brazil, use local device time instead (more natural)
-      if (tz.toLowerCase().contains('sao_paulo') ||
-          tz.toLowerCase().contains('brasilia') ||
-          tz.toLowerCase().contains('brazil')) {
-        final deviceNow = DateTime.now();
-        _updateGreetingAndImage(deviceNow);
-      }
-    } catch (_) {
-      // fallback: compute from UTC
-      final nowUtc = DateTime.now().toUtc();
-      final br = nowUtc.add(const Duration(hours: -3));
-      _updateGreetingAndImage(br);
-    }
-  }
+void _initBrazilTime() {
+  // Esta abordagem usa o fuso horário do próprio dispositivo, que é o mais fiável.
+  // E não depende de nenhum pacote nativo!
+  final now = DateTime.now();
+  _updateGreetingAndImage(now);
+}
 
   void _updateGreetingAndImage(DateTime br) {
     final hour = br.hour;
